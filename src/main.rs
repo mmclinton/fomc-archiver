@@ -26,7 +26,7 @@ struct Video {
 
 #[derive(Parser)]
 struct Cli {
-    /// Filter the default results to by any case-sensitive <string> provided.
+    /// Filter the default results to by any <string> provided (case-insensitive)
     #[arg(short, long)]
     filter: Option<String>,
 }
