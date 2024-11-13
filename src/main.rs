@@ -12,7 +12,7 @@ struct RSS {
 
 #[derive(Debug, Deserialize)]
 struct Channel {
-    title: String,
+    // title: String,
     item: Vec<Video>,
 }
 
@@ -26,6 +26,7 @@ struct Video {
 
 #[derive(Parser)]
 struct Cli {
+    /// Filter the default results to by any case-sensitive <string> provided.
     #[arg(short, long)]
     filter: Option<String>,
 }
@@ -33,18 +34,15 @@ struct Cli {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
-    
+
     let response = reqwest::get(FOMC_LINK).await?;
     let data = response.text().await?;
 
     let rss: RSS = quick_xml::de::from_str(&data)?;
 
-    println!("Channel Title: {}", rss.channel.title);
-    println!();
-
     for item in rss.channel.item {
         if let Some(filter) = &args.filter {
-            if !item.title.contains(filter) {
+            if !item.title.to_lowercase().contains(&filter.to_lowercase()) {
                 continue;
             }
         }
