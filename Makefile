@@ -26,7 +26,7 @@ install:
 	@echo ""
 
 cron: 
-	@echo "Setting up up cron job..."
+	@echo "Setting up a cron job..."
 	@chmod +x cron.sh
 	@./cron.sh
 	@echo "Done!"
