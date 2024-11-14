@@ -247,9 +247,9 @@ name = "fomc-rss"
 version = "0.1.0"
 dependencies = [
  "clap",
- "quick-xml",
  "reqwest",
  "serde",
+ "serde_json",
  "tokio",
 ]
 
@@ -812,16 +812,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f139b0662de085916d1fb67d2b4169d1addddda1919e696f3252b740b629986e"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "quick-xml"
-version = "0.24.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37dddbbe9df96afafcb8027fcf263971b726530e12f0787f620a7ba5b4846081"
-dependencies = [
- "memchr",
- "serde",
 ]
 
 [[package]]
