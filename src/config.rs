@@ -1,7 +1,10 @@
 use serde::Deserialize;
 use serde_json;
 use std::fs;
-use std::{env, path::{Path, PathBuf}};
+use std::{
+    env,
+    path::{Path, PathBuf},
+};
 
 const CONFIG_DIR: &str = ".config/fomc";
 const CONFIG_FILE: &str = "config.json";
@@ -16,9 +19,9 @@ pub fn config_path() -> PathBuf {
     Path::new(&home_dir).join(CONFIG_DIR).join(CONFIG_FILE)
 }
 
-pub fn read_config() -> Result<String, Box<dyn std::error::Error>>{
+pub fn read_config() -> Result<String, Box<dyn std::error::Error>> {
     let path = config_path();
-    let config_data = fs::read_to_string(path)?; 
+    let config_data = fs::read_to_string(path)?;
     let config: Config = serde_json::from_str(&config_data)?;
     Ok(config.api_key)
 }
