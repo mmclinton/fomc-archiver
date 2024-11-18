@@ -1,9 +1,7 @@
 /*
-TODO: finish makefile install logic
-TODO: add a database and corresponding logic
 TODO: do not allow the user to run 'make' without providing an API key (for now)
 */
-use anyhow::Result; 
+use anyhow::Result;
 use std::env;
 mod api;
 mod config;

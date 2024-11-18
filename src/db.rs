@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use rusqlite::{params, Connection};
+use std::env;
 use std::fs;
 use std::path::PathBuf;
 
@@ -103,7 +104,10 @@ impl Database {
     }
 
     fn get_db_path() -> PathBuf {
-        let mut path = dirs::data_local_dir().unwrap_or_else(|| PathBuf::from("."));
+        let home_dir = env::var("HOME").expect("HOME environment variable not set");
+        let mut path = PathBuf::from(home_dir);
+        path.push(".local");
+        path.push("share");
         path.push("fomc");
         path.push("fomc.db");
         path

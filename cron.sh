@@ -2,7 +2,7 @@
 
 USER=$(whoami)
 
-cron_job="0 5 * * 1 /usr/local/bin/fomc --update"
+cron_job="0 5 * * * /usr/local/bin/fomc --update"
 
 existing_cron=$(sudo crontab -u "$USER" -l 2>/dev/null | grep -F "$cron_job")
 

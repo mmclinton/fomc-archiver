@@ -25,8 +25,13 @@ setup:
 
 install: 
 	@echo "Installing..."
+	@echo "Building the release binary..."
+	@cargo build --release > /dev/null 2>&1
+	@echo "Moving the binary to /usr/local/bin..."
+	@if [ ! -d "/usr/local/bin" ]; then sudo mkdir -p /usr/local/bin; fi
+	@sudo cp target/release/fomc-rss /usr/local/bin/fomc
 	@echo "Done!"
-	@echo 
+	@echo
 
 cron: 
 	@echo "Setting up a cron job..."
