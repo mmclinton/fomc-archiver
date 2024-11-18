@@ -1,7 +1,8 @@
 use crate::config::read_config;
 use std::error::Error;
 
-const BASE_URL: &str = "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UCAzhpt9DmG6PnHXjmJTvRGQ&q=Press+Conference&type=video&order=date&maxResults=50&key=";
+const API_URL: &str = "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UCAzhpt9DmG6PnHXjmJTvRGQ&q=Press+Conference&type=video&order=date&maxResults=50&key=";
+const YOUTUBE_URL: &str = "https://www.youtube.com/watch?v=";
 
 use serde::Deserialize;
 
@@ -64,12 +65,16 @@ pub struct Thumbnail {
 impl YouTubeResponse {
     fn make_url(page_token: Option<String>) -> Result<String, Box<dyn std::error::Error>> {
         let api_key = read_config()?;
-        let mut url = format!("{}{}", BASE_URL, api_key);
+        let mut url = format!("{}{}", API_URL, api_key);
 
         if let Some(token) = page_token {
             url.push_str(&format!("&pageToken={}", token))
         }
         Ok(url)
+    }
+
+    pub fn make_link(video_id: &str) -> String {
+        format!("{}{}", YOUTUBE_URL, video_id)
     }
 
     pub async fn get_data(page_token: Option<String>) -> Result<YouTubeResponse, Box<dyn Error>> {
