@@ -3,9 +3,11 @@ TODO: do not allow the user to run 'make' without providing an API key (for now)
 */
 use anyhow::Result;
 use std::env;
+
 mod api;
 mod config;
 mod db;
+mod display;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -19,27 +21,11 @@ async fn main() -> Result<()> {
             Err(e) => eprintln!("Error updating database: {}", e),
         }
     } else {
-        match fetch_and_print_videos(&db).await {
-            Ok(()) => println!("Videos fetched successfully!"),
+        match display::fetch_and_print_videos(&db).await {
+            Ok(()) => print!(""),
             Err(e) => eprintln!("Error fetching videos: {}", e),
         }
     }
 
     Ok(())
-}
-
-async fn fetch_and_print_videos(db: &db::Database) -> Result<()> {
-    match db.fetch_all_videos() {
-        Ok(videos) => {
-            println!("Videos in the database:\n");
-            for (title, published_at, link) in videos {
-                println!(
-                    "Title: {}\nPublished At: {}\nLink: {}\n",
-                    title, published_at, link
-                );
-            }
-            Ok(())
-        }
-        Err(e) => Err(anyhow::anyhow!("Error fetching videos from the database: {}", e).into()),
-    }
 }
