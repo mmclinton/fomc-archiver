@@ -46,3 +46,4 @@ api_key:
 	@$(MKDIR) $(CONFIG_PATH)
 	@$(WRITE_JSON)
 	@echo "Done!"
+	@echo

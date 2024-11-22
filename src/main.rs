@@ -1,6 +1,7 @@
 /*
 TODO: do not allow the user to run 'make' without providing an API key (for now)
 */
+#![allow(non_snake_case)]
 use anyhow::Result;
 use std::env;
 

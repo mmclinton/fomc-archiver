@@ -6,6 +6,7 @@ const YOUTUBE_URL: &str = "https://www.youtube.com/watch?v=";
 
 use serde::Deserialize;
 
+#[allow(non_snake_case, dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct YouTubeResponse {
     pub kind: String,
@@ -16,12 +17,14 @@ pub struct YouTubeResponse {
     pub items: Vec<Item>,
 }
 
+#[allow(non_snake_case, dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct PageInfo {
     pub totalResults: u32,
     pub resultsPerPage: u32,
 }
 
+#[allow(non_snake_case, dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Item {
     pub kind: String,
@@ -30,12 +33,14 @@ pub struct Item {
     pub snippet: Snippet,
 }
 
+#[allow(non_snake_case, dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Id {
     pub kind: String,
     pub videoId: String,
 }
 
+#[allow(non_snake_case, dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Snippet {
     pub publishedAt: String,
@@ -48,6 +53,7 @@ pub struct Snippet {
     pub publishTime: String,
 }
 
+#[allow(non_snake_case, dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Thumbnails {
     pub default: Thumbnail,
@@ -55,6 +61,7 @@ pub struct Thumbnails {
     pub high: Thumbnail,
 }
 
+#[allow(non_snake_case, dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Thumbnail {
     pub url: String,

@@ -95,8 +95,6 @@ impl Database {
                         }
                     }
                 }
-
-                println!("Total results added: {}", filtered_counter);
                 Ok(())
             }
             Err(e) => Err(anyhow::anyhow!("Error occurred while fetching data: {}", e)),
