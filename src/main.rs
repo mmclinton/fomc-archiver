@@ -1,5 +1,6 @@
 /*
 TODO: do not allow the user to run 'make' without providing an API key (for now)
+TODO: add the ability to download the videos using the link within the db
 */
 #![allow(non_snake_case)]
 use anyhow::Result;

@@ -59,8 +59,6 @@ impl Database {
     }
 
     pub async fn update_database(&self) -> Result<()> {
-        let mut filtered_counter = 0;
-
         match crate::api::YouTubeResponse::get_data(None).await {
             Ok(data) => {
                 let filtered_items = data.filter();
@@ -71,7 +69,6 @@ impl Database {
 
                     self.insert_video(&item.snippet.title, &formatted_date, &link)
                         .context("Failed to insert video")?;
-                    filtered_counter += 1;
                 }
 
                 let mut next_page_token = data.nextPageToken;
@@ -85,7 +82,6 @@ impl Database {
 
                                 self.insert_video(&item.snippet.title, &formatted_date, &link)
                                     .context("Failed to insert video")?;
-                                filtered_counter += 1;
                             }
                             next_page_token = next_data.nextPageToken;
                         }

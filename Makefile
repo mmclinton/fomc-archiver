@@ -5,6 +5,10 @@ CONFIG_PATH := $(HOME)/.config/fomc
 WRITE_JSON := echo '{"api_key": "$(api_key)"}' > $(CONFIG_PATH)/config.json
 MKDIR := mkdir -p
 
+ifndef api_key
+$(error You must provide the 'api_key' variable. Usage: make api_key="your_api_key")
+endif
+
 all: setup install cron api_key
 
 .PHONY: setup install cron api_key
