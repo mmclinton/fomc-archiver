@@ -4,13 +4,15 @@ use anyhow::Result;
 pub async fn fetch_and_print_videos(db: &db::Database) -> Result<()> {
     db.fetch_all_videos()
         .map(|videos| {
-            let table_entries: Vec<String> = videos
+            let table_entries: Vec<(String, bool)> = videos
                 .into_iter()
-                .flat_map(|(_, published_at, link)| {
+                .enumerate()
+                .flat_map(|(i, (_, published_at, link))| {
+                    let is_cyan = i % 2 == 1; 
                     vec![
-                        format!("Date: {}", published_at),
-                        format!("Link: {}", link),
-                        String::new(),
+                        (format!("Date: {}", published_at), is_cyan),
+                        (format!("Link: {}", link), is_cyan),
+                        (String::new(), false),
                     ]
                 })
                 .collect();
@@ -23,19 +25,23 @@ pub async fn fetch_and_print_videos(db: &db::Database) -> Result<()> {
         })
 }
 
-fn ascii_table(entries: Vec<String>) -> String {
+fn ascii_table(entries: Vec<(String, bool)>) -> String {
     if entries.is_empty() {
         return "No content to display.".into();
     }
 
-    let max_length = entries.iter().map(|entry| entry.len()).max().unwrap_or(0);
-    let border = format!("+{}+", "-".repeat(max_length + 4));
+    let max_length = entries.iter().map(|(entry, _)| entry.len()).max().unwrap_or(0);
+    let border = format!("+{}+", "-".repeat(max_length + 5));
 
-    let table = entries
-        .into_iter()
-        .fold(format!("{}\n", border), |acc, entry| {
-            acc + &format!("| {:<width$} |\n", entry, width = max_length + 2)
-        });
+    let table = entries.into_iter().fold(format!("{}\n", border), |acc, (entry, is_cyan)| {
+        let color = if is_cyan { "\x1b[36m" } else { "\x1b[0m" }; 
+        acc + &format!(
+            "|  {}{:<width$}\x1b[0m |\n",
+            color,
+            entry,
+            width = max_length + 2
+        )
+    });
 
     table + &border
 }
