@@ -84,10 +84,11 @@ impl YouTubeResponse {
         format!("{}{}", YOUTUBE_URL, video_id)
     }
 
-    pub async fn get_data(page_token: Option<String>) -> Result<YouTubeResponse, Box<dyn Error>> {
+    pub fn get_data(page_token: Option<String>) -> Result<YouTubeResponse, Box<dyn Error>> {
         let url = YouTubeResponse::make_url(page_token)?;
-        let response = reqwest::get(url).await?;
-        let json_data: YouTubeResponse = response.json().await?;
+        let response = ureq::get(&url).call()?;
+        let response_body = response.into_string()?; // Read the response body as a String
+        let json_data: YouTubeResponse = serde_json::from_str(&response_body)?; // Deserialize into struct
         Ok(json_data)
     }
 

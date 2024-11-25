@@ -59,7 +59,7 @@ impl Database {
     }
 
     pub async fn update_database(&self) -> Result<()> {
-        match crate::api::YouTubeResponse::get_data(None).await {
+        match crate::api::YouTubeResponse::get_data(None) {
             Ok(data) => {
                 let filtered_items = data.filter();
 
@@ -73,7 +73,7 @@ impl Database {
 
                 let mut next_page_token = data.nextPageToken;
                 while let Some(token) = next_page_token {
-                    match crate::api::YouTubeResponse::get_data(Some(token)).await {
+                    match crate::api::YouTubeResponse::get_data(Some(token)) {
                         Ok(next_data) => {
                             let filtered_items = next_data.filter();
                             for item in filtered_items {
