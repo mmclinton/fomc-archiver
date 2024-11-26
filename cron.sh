@@ -10,7 +10,7 @@ if [ ! -w "$log_file" ]; then
     sudo chown "$USER" "$log_file"
 fi
 
-cron_job="0 5 * * * fomc --update && echo \"\$(date): Job completed successfully\" >> $log_file"
+cron_job="0 5 * * * /usr/local/bin/fomc --update && echo \"\$(date): Job completed successfully\" >> /home/$USER/.config/fomc/fomc.log && tail -n 100 /home/$USER/.config/fomc/fomc.log > /home/$USER/.config/fomc/fomc.log.tmp && mv /home/$USER/.config/fomc/fomc.log.tmp /home/$USER/.config/fomc/fomc.log"
 
 existing_cron=$(sudo crontab -u "$USER" -l 2>/dev/null | grep -F "$cron_job")
 
