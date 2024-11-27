@@ -10,9 +10,8 @@ pub async fn fetch_and_print_videos(db: &db::Database) -> Result<()> {
                 .flat_map(|(i, (_, published_at, link))| {
                     let is_cyan = i % 2 == 1; 
                     vec![
-                        (format!("Date: {}", published_at), is_cyan),
-                        (format!("Link: {}", link), is_cyan),
-                        (String::new(), false),
+                        (format!("{}: {}", published_at, link), is_cyan),
+                        // (String::new(), false),
                     ]
                 })
                 .collect();
