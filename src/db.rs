@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use rusqlite::OptionalExtension;
 use rusqlite::{params, Connection};
 use std::env;
 use std::fs;
@@ -58,19 +59,22 @@ impl Database {
         Ok(videos)
     }
 
-    pub async fn update_database(&self) -> Result<()> {
+    pub fn update_database(&self) -> Result<()> {
         match crate::api::YouTubeResponse::get_data(None) {
             Ok(data) => {
                 let filtered_items = data.filter();
-
+    
                 for item in filtered_items {
                     let formatted_date = format_date(&item.snippet.publishedAt);
                     let link = crate::api::YouTubeResponse::make_link(&item.id.videoId);
-
-                    self.insert_video(&item.snippet.title, &formatted_date, &link)
-                        .context("Failed to insert video")?;
+                    let title = &item.snippet.title;
+    
+                    if !self.video_exists(title)? {
+                        self.insert_video(title, &formatted_date, &link)
+                            .context("Failed to insert video")?;
+                    }
                 }
-
+    
                 let mut next_page_token = data.nextPageToken;
                 while let Some(token) = next_page_token {
                     match crate::api::YouTubeResponse::get_data(Some(token)) {
@@ -79,9 +83,12 @@ impl Database {
                             for item in filtered_items {
                                 let formatted_date = format_date(&item.snippet.publishedAt);
                                 let link = crate::api::YouTubeResponse::make_link(&item.id.videoId);
-
-                                self.insert_video(&item.snippet.title, &formatted_date, &link)
-                                    .context("Failed to insert video")?;
+                                let title = &item.snippet.title;
+    
+                                if !self.video_exists(title)? {
+                                    self.insert_video(title, &formatted_date, &link)
+                                        .context("Failed to insert video")?;
+                                }
                             }
                             next_page_token = next_data.nextPageToken;
                         }
@@ -95,6 +102,15 @@ impl Database {
             }
             Err(e) => Err(anyhow::anyhow!("Error occurred while fetching data: {}", e)),
         }
+    }
+    
+    pub fn video_exists(&self, title: &str) -> Result<bool> {
+        let mut stmt = self
+            .conn
+            .prepare("SELECT 1 FROM videos WHERE title = ? LIMIT 1")?;
+        let exists: Option<i32> = stmt.query_row(params![title], |row| row.get(0)).optional()?;
+    
+        Ok(exists.is_some())
     }
 
     fn get_db_path() -> PathBuf {

@@ -18,7 +18,7 @@ async fn main() -> Result<()> {
     let is_update = env::args().any(|arg| arg == "--update");
 
     if is_update {
-        match db.update_database().await {
+        match db.update_database() {
             Ok(()) => println!("Database updated successfully!"),
             Err(e) => eprintln!("Error updating database: {}", e),
         }
