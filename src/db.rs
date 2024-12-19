@@ -43,38 +43,22 @@ impl Database {
         Ok(())
     }
 
-    pub fn fetch_all_videos(&self) -> Result<Vec<(String, String, String)>> {
-        let mut stmt = self
-            .conn
-            .prepare("SELECT title, published_at, link FROM videos ORDER BY published_at")
-            .context("Failed to prepare statement to fetch videos")?;
-        let video_iter = stmt
-            .query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))
-            .context("Failed to map rows from video query")?;
-
-        let mut videos = Vec::new();
-        for video in video_iter {
-            videos.push(video.context("Error reading video from database")?);
-        }
-        Ok(videos)
-    }
-
     pub fn update_database(&self) -> Result<()> {
         match crate::api::YouTubeResponse::get_data(None) {
             Ok(data) => {
                 let filtered_items = data.filter();
-    
+
                 for item in filtered_items {
                     let formatted_date = format_date(&item.snippet.publishedAt);
                     let link = crate::api::YouTubeResponse::make_link(&item.id.videoId);
                     let title = &item.snippet.title;
-    
+
                     if !self.video_exists(title)? {
                         self.insert_video(title, &formatted_date, &link)
                             .context("Failed to insert video")?;
                     }
                 }
-    
+
                 let mut next_page_token = data.nextPageToken;
                 while let Some(token) = next_page_token {
                     match crate::api::YouTubeResponse::get_data(Some(token)) {
@@ -84,7 +68,7 @@ impl Database {
                                 let formatted_date = format_date(&item.snippet.publishedAt);
                                 let link = crate::api::YouTubeResponse::make_link(&item.id.videoId);
                                 let title = &item.snippet.title;
-    
+
                                 if !self.video_exists(title)? {
                                     self.insert_video(title, &formatted_date, &link)
                                         .context("Failed to insert video")?;
@@ -103,13 +87,39 @@ impl Database {
             Err(e) => Err(anyhow::anyhow!("Error occurred while fetching data: {}", e)),
         }
     }
-    
+
+    pub fn fetch_n_videos(&self, limit: i64) -> Result<Vec<(String, String, String)>> {
+        let query =
+            "SELECT title, published_at, link FROM videos ORDER BY published_at DESC LIMIT ?";
+
+        let mut stmt = self
+            .conn
+            .prepare(&query)
+            .context("Failed to prepare statement to fetch limited number of videos")?;
+
+        let video_iter = stmt
+            .query_map([limit], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))
+            .context("Failed to map rows from video query")?;
+
+        let mut videos = Vec::new();
+        for video in video_iter {
+            match video {
+                Ok(v) => videos.push(v),
+                Err(e) => eprintln!("Error reading video from database: {}", e),
+            }
+        }
+
+        Ok(videos)
+    }
+
     pub fn video_exists(&self, title: &str) -> Result<bool> {
         let mut stmt = self
             .conn
             .prepare("SELECT 1 FROM videos WHERE title = ? LIMIT 1")?;
-        let exists: Option<i32> = stmt.query_row(params![title], |row| row.get(0)).optional()?;
-    
+        let exists: Option<i32> = stmt
+            .query_row(params![title], |row| row.get(0))
+            .optional()?;
+
         Ok(exists.is_some())
     }
 
