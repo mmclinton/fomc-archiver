@@ -30,7 +30,7 @@ fn ascii_table(entries: Vec<(String, bool)>) -> String {
     }
 
     let max_length = entries.iter().map(|(entry, _)| entry.len()).max().unwrap_or(0);
-    let border = format!("+{}+", "-".repeat(max_length + 5));
+    let border = format!("+{}+", "-".repeat(max_length + 4));
 
     let table = entries.into_iter().fold(format!("{}\n", border), |acc, (entry, is_cyan)| {
         let color = if is_cyan { "\x1b[36m" } else { "\x1b[0m" }; 
@@ -38,7 +38,7 @@ fn ascii_table(entries: Vec<(String, bool)>) -> String {
             "|  {}{:<width$}\x1b[0m |\n",
             color,
             entry,
-            width = max_length + 2
+            width = max_length + 1
         )
     });
 

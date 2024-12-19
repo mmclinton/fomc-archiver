@@ -46,7 +46,7 @@ impl Database {
     pub fn fetch_all_videos(&self) -> Result<Vec<(String, String, String)>> {
         let mut stmt = self
             .conn
-            .prepare("SELECT title, published_at, link FROM videos")
+            .prepare("SELECT title, published_at, link FROM videos ORDER BY published_at")
             .context("Failed to prepare statement to fetch videos")?;
         let video_iter = stmt
             .query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))
